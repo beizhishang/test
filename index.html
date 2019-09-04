@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ch">
 	<head>
-		<meta charset="UTF-8">
+		<meta charset="GBK">
 		<title>纯化共享平台</title>
 		<style type="text/css">
 			*{
@@ -59,31 +59,60 @@
 			.menu-left{
 				background: #2C9AB7;
 				width: 20%;
-				height: 800px;
+				height: 1200px;
 			}
 			.menu-center{
 				background: #1E967E;
 				width: 50%;
-				height: 800px;
+				height: 1200px;
 			}
 			.menu-right{
 				background: #52BAD5;
 				width: 30%;
-				height: 800px;
+				height: 1200px;
+				position: relative;
 			}
 			h3{
-				width: 25px;
+				width: 2%;
 				height: 100%;
-				float: left;
+				float: left;				
 			}
-			.project{
-				background: black;
+			h3:hover{
+				color: aqua;
+				text-shadow: 5px 5px 3px rgba(0,0,0,.5)
+			}
+			div.project{
+				background: green;
 				color: white;
-				width: 100%;
-				height: 105px;
-				padding:10px;
+				width: 15.8%;
+				height: 80px;
+				padding:20px;
+				border-radius: 10px;
+				position: absolute;
 			}
-			div p{
+			div.project:hover{
+				background: green;
+			}
+
+			#project-top{
+				text-align: center;
+				font-size: 25px;
+				font-family: Jokerman;
+				display: block;
+			}
+			#project-top:hover{
+				color: red;
+				text-shadow: 5px 5px 3px rgba(0,0,0,.5)
+			}
+			#project-bottom{
+				text-align: center;
+				display: block;
+				font-size: 15px;
+				font-family: 幼圆;
+			}
+			#project-bottom:hover{
+				color: aqua;
+				text-shadow: 5px 5px 3px rgba(0,0,0,.5)
 			}
 		</style>
 	</head>
@@ -101,12 +130,15 @@
 				<td class="menu-left" valign="top">
 					<div class="project">
 						<h3>当前项目</h3>
-						<p>IBI308</p>
-						<p>信迪利单抗注射液</p>
+						<a id="project-top">IBI308</a>
+						<br />
+						<a id="project-bottom">信迪利单抗注射液</a>
 					</div>
 				</td>
 				<td class="menu-center">
-
+					<div>
+						
+					</div>
 				</td>
 				<td class="menu-right">
 
@@ -114,5 +146,7 @@
 			</tr>
 		</table>
 	</form>
+	<footer>
+	</footer>
 	</body>
 </html>
