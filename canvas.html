@@ -1,0 +1,56 @@
+<html>
+
+<head>
+    <title>Canvas tutorial</title>
+    <script type="text/javascript">
+        function draw() {
+            var canvas = document.getElementById('tutorial');
+            if (canvas.getContext) {
+                var ctx = canvas.getContext('2d');
+                ctx.fillStyle = "rgb(200,0,0)";
+                ctx.fillRect(10, 10, 55, 50);
+
+                ctx.fillStyle = "rgba(0, 0, 200, 0.5)";
+                ctx.fillRect(30, 30, 55, 50);
+                ctx.fillRect(25, 25, 100, 100);
+                ctx.clearRect(45, 45, 60, 60);
+                ctx.strokeRect(50, 50, 50, 50);
+
+                var p = new Path2D("M10 10 h 80 v 80 h -80 Z");
+                ctx.fill(p);
+
+            }
+        }
+    </script>
+    <style type="text/css">
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            width: 100vw;
+            height: 100vh;
+            background-color: #eee;
+        }
+
+        #container {
+            padding: 50px;
+            width: 1000px;
+            height: 800px;
+            margin: 0 auto;
+        }
+
+        canvas {
+            border: 1px solid black;
+        }
+    </style>
+</head>
+
+<body onload="draw();">
+    <div id="container">
+        <canvas id="tutorial" width="1000" height="800"></canvas>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>绩效看板</title>
+    <!-- 引入 Echarts 库 -->
+    <script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
+</head>
+<body>
+    <!-- 创建一个 div 元素作为容器 -->
+    <div id="chart" style="width: 800px;height:600px;"></div>
+
+    <script>
+        // 准备数据
+        var data = {
+            names: ['John', 'Alice', 'Bob', 'Peter'],
+            scores: [90, 80, 70, 85]
+        };
+
+        // 创建一个基本的柱状图实例
+        var chart = echarts.init(document.getElementById('chart'));
+
+        // 配置选项
+        var option = {
+            title: {
+                text: '个人得分'
+            },
+            tooltip: {},
+            xAxis: {
+                data: data.names
+            },
+            yAxis: {},
+            series: [{
+                name: '得分',
+                type: 'bar',
+                data: data.scores
+            }]
+        };
+
+        // 加载数据并绘制图表
+        chart.setOption(option);
+    </script>
+</body>
+</html>
+
