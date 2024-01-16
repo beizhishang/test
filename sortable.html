@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js'></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js'></script>
+</head>
+
+<body>
+    <div class="row">
+        <div id="example3Left" class="list-group col-6">
+            <div class="list-group-item">Item 1</div>
+            <div class="list-group-item">Item 2</div>
+            <div class="list-group-item">Item 3</div>
+            <div class="list-group-item">Item 4</div>
+            <div class="list-group-item">Item 5</div>
+            <div class="list-group-item">Item 6</div>
+        </div>
+
+        <div id="example3Right" class="list-group col-6">
+            <div class="list-group-item tinted">Item 1</div>
+            <div class="list-group-item tinted">Item 2</div>
+            <div class="list-group-item tinted">Item 3</div>
+            <div class="list-group-item tinted">Item 4</div>
+            <div class="list-group-item tinted">Item 5</div>
+            <div class="list-group-item tinted">Item 6</div>
+        </div>
+    </div>
+
+</body>
+<script>
+    new Sortable(example3Left, {
+        group: {
+            name: 'shared',
+            pull: 'clone' // To clone: set pull to 'clone'
+        },
+        animation: 150
+    });
+
+    new Sortable(example3Right, {
+        group: {
+            name: 'shared',
+            pull: 'clone'
+        },
+        animation: 150
+    });
+
+</script>
+
+</html>

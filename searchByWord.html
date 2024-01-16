@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <input type="text" id="search-input">
+    <div id="data-container"></div>
+</body>
+<script>
+    // Get the input field and data container
+    const input = document.querySelector('#search-input');
+    const dataContainer = document.querySelector('#data-container');
+
+    // Fetch the data from the JSON file
+    fetch('./data.json')
+        .then(response => response.json())
+        .then(data => {
+            // Listen for changes to the input field
+            input.addEventListener('input', () => {
+                // Get the search query
+                const query = input.value.toLowerCase();
+
+                // Filter the data based on the search query
+                const filteredData = data.filter(item => {
+                    return item.name.toLowerCase().includes(query);
+                });
+
+                // Update the UI to display the filtered results
+                dataContainer.innerHTML = '';
+                filteredData.forEach(item => {
+                    const card = document.createElement('div');
+                    card.classList.add('card');
+                    card.innerHTML = `
+          <img src="./src/images/icon/logo.png" alt="${item.name}">
+          <div>
+            <h3>${item.name}</h3>
+            <p>Age: ${item.age}</p>
+          </div>
+        `;
+                    dataContainer.appendChild(card);
+                });
+            });
+        });
+
+</script>
+
+</html>

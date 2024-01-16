@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>Login Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .login-container {
+            text-align: center;
+            border: 1px solid #ccc;
+            padding: 20px;
+            max-width: 300px;
+            width: 100%;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        input {
+            padding: 8px;
+            width: 100%;
+        }
+
+        button {
+            padding: 8px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login-container">
+        <h2>Login</h2>
+        <form id="loginForm">
+            <div class="input-group">
+                <label for="username">Username:</label>
+                <input type="text" id="username" required>
+            </div>
+            <div class="input-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" required>
+            </div>
+            <button type="submit">Login</button>
+        </form>
+    </div>
+</body>
+<script>
+    document.getElementById('loginForm').onsubmit = function (event) {
+        event.preventDefault(); // Prevent form submission for now
+
+        // Add your validation logic here
+        let username = document.getElementById('username').value;
+        let password = document.getElementById('password').value;
+
+        if (username === '' || password === '') {
+            alert('Username and password are required');
+        } else {
+            // Perform login logic (e.g., send data to server)
+            // You can also redirect the user to a different page upon successful login
+        }
+    };
+</script>
+
+</html>

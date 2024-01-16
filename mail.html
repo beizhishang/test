@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Email Sender</title>
+</head>
+<body>
+  <h2>Email Sender</h2>
+
+  <form id="emailForm">
+    <label for="recipient">Recipient:</label>
+    <input type="email" id="recipient" required><br><br>
+
+    <label for="subject">Subject:</label>
+    <input type="text" id="subject" required><br><br>
+
+    <label for="message">Message:</label><br>
+    <textarea id="message" rows="5" required></textarea><br><br>
+
+    <button type="submit">Send Email</button>
+  </form>
+
+  <script>
+    document.getElementById('emailForm').addEventListener('submit', function(e) {
+      e.preventDefault(); // 阻止默认的表单提交行为
+
+      // 获取输入的邮件信息
+      var recipient = document.getElementById('recipient').value;
+      var subject = document.getElementById('subject').value;
+      var message = document.getElementById('message').value;
+
+      // 构建发送邮件的URL
+      var url = 'https://api.mailgun.net/v3/YOUR_DOMAIN_NAME/messages'; // 替换为你的邮件服务提供商的API URL
+      var apiKey = 'YOUR_API_KEY'; // 替换为你的邮件服务提供商的API密钥
+
+      // 构建发送邮件的请求
+      var xhr = new XMLHttpRequest();
+      xhr.open('POST', url, true);
+      xhr.setRequestHeader('Authorization', 'Basic ' + btoa('api:' + apiKey));
+      xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+
+      // 构建待发送的邮件数据
+      var formData = new FormData();
+      formData.append('from', 'sender@example.com'); // 发件人
+      formData.append('to', recipient); // 收件人
+      formData.append('subject', subject); // 主题
+      formData.append('text', message); // 正文内容
+
+      // 发送请求
+      xhr.onload = function() {
+        if (xhr.status === 200) {
+          alert('邮件发送成功！');
+          // 清除表单内容
+          document.getElementById('emailForm').reset();
+        } else {
+          alert('邮件发送失败，请稍后重试。');
+        }
+      };
+
+      xhr.onerror = function() {
+        alert('邮件发送失败，请稍后重试。');
+      };
+
+      xhr.send(formData);
+    });
+  </script>
+</body>
+</html>

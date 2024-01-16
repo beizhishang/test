@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>打断部分用"-"表示</title>
+	<style>
+		.text {
+			width: 300px;
+			text-align: justify; /* 文本两端对齐 */
+			word-break: break-all; /* 允许单词内打断 */
+			hyphens: manual; /* 开启手动断字 */
+		}
+		.text span {
+			display: inline-block;
+			margin-right: -0.2em; /* 缩小单词间距 */
+		}
+		.text span:after {
+			content: "-"; /* 在单词中间添加"-"符号 */
+		}
+	</style>
+</head>
+<body>
+	<p class="text">这是一段长长的文字，需要换行，但不能随便断字。所以，我们可以手动在单词中间插入硬连字符&shy;<span>电-子-邮-件</span>地址，这样即可实现打断部分用"-"表示的效果。</p>
+</body>
+</html>
