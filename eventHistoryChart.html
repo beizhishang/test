@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>历史事件趋势图</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f6f9;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+            border: 1px solid #e9ecef;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            margin-bottom: 5px;
+            font-weight: 600;
+            font-size: 0.9em;
+            color: #555;
+        }
+
+        .form-group input {
+            padding: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .btn-container {
+            grid-column: 1 / -1;
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        #chart-container {
+            width: 100%;
+            height: 600px;
+            margin-top: 30px;
+            border: 1px solid #eee;
+            border-radius: 4px;
+            position: relative;
+        }
+
+        .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.2em;
+            color: #666;
+            display: none;
+        }
+
+        .error-msg {
+            color: #dc3545;
+            text-align: center;
+            margin-top: 10px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>历史事件趋势分析</h1>
+    
+    <div class="controls">
+        <div class="form-group">
+            <label for="path">事件路径 (Path)</label>
+            <input type="text" id="path" placeholder="/System/Core/..." value="/System/Core/Examples/Demo Data/Events/ScriptEvent1">
+        </div>
+        <div class="form-group">
+            <label for="startTime">开始时间</label>
+            <input type="datetime-local" id="startTime">
+        </div>
+        <div class="form-group">
+            <label for="endTime">结束时间</label>
+            <input type="datetime-local" id="endTime">
+        </div>
+        <div class="btn-container">
+            <button id="fetchBtn" onclick="fetchData()">生成图表</button>
+        </div>
+    </div>
+
+    <div id="errorMsg" class="error-msg"></div>
+
+    <div id="chart-container">
+        <div id="loading" class="loading">数据加载中...</div>
+    </div>
+</div>
+
+<script>
+    // Initialize default dates (e.g., last 24 hours)
+    const now = new Date();
+    const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+    
+    // Format for datetime-local input: YYYY-MM-DDTHH:mm
+    const formatDateTime = (date) => {
+        const pad = (num) => num.toString().padStart(2, '0');
+        return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+    };
+
+    document.getElementById('startTime').value = formatDateTime(yesterday);
+    document.getElementById('endTime').value = formatDateTime(now);
+
+    let myChart = echarts.init(document.getElementById('chart-container'));
+    
+    // Handle window resize
+    window.addEventListener('resize', function() {
+        myChart.resize();
+    });
+
+    async function fetchData() {
+        const path = document.getElementById('path').value;
+        const startTime = document.getElementById('startTime').value;
+        const endTime = document.getElementById('endTime').value;
+        const btn = document.getElementById('fetchBtn');
+        const loading = document.getElementById('loading');
+        const errorMsg = document.getElementById('errorMsg');
+
+        if (!path || !startTime || !endTime) {
+            alert('请填写完整信息');
+            return;
+        }
+
+        // Prepare timestamps in ISO format (with milliseconds and Z if possible, but the example has Z)
+        // The input gives "2023-10-27T10:00", we need "2023-10-27T10:00:00.000Z"
+        const isoStart = new Date(startTime).toISOString();
+        const isoEnd = new Date(endTime).toISOString();
+
+        // UI updates
+        btn.disabled = true;
+        loading.style.display = 'block';
+        errorMsg.style.display = 'none';
+        myChart.clear();
+
+        const requestBody = {
+            "items": [
+                {
+                    "p": path
+                }
+            ],
+            "start_time": isoStart,
+            "end_time": isoEnd,
+            "limit": 1000, // Reasonable limit
+            "transformation": "none"
+        };
+
+        try {
+            const response = await fetch('http://10.21.55.30:8002/api/v2/readeventhistory', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'username': 'WebAPI',
+                    'password': 'DeltaVE1'
+                },
+                body: JSON.stringify(requestBody)
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const result = await response.json();
+            processData(result);
+
+        } catch (error) {
+            console.error('Fetch error:', error);
+            errorMsg.textContent = '获取数据失败: ' + error.message + ' (请检查网络或跨域设置)';
+            errorMsg.style.display = 'block';
+        } finally {
+            btn.disabled = false;
+            loading.style.display = 'none';
+        }
+    }
+
+    function processData(data) {
+        // Parsing logic based on structure provided
+        // data.data.event_data.query_data[].items[].events[]
+        
+        try {
+            const queryData = data?.data?.event_data?.query_data?.[0];
+            if (!queryData) {
+                throw new Error("返回数据格式不正确: 缺少 query_data");
+            }
+
+            const items = queryData.items?.[0];
+            if (!items) {
+                throw new Error("未找到数据项");
+            }
+
+            const events = items.events || [];
+            if (events.length === 0) {
+                document.getElementById('errorMsg').textContent = '该时间段内无数据';
+                document.getElementById('errorMsg').style.display = 'block';
+                return;
+            }
+
+            // We need to extract series. The structure allows for multiple keys per event.
+            // Let's iterate all events and collect data points by key.
+            const seriesDataMap = new Map(); // Key -> Array of {time, value}
+
+            events.forEach(event => {
+                // Determine structure. 
+                // Based on example: event.e_.o_.a_.a_ contains the values
+                const attributes = event?.e_?.o_?.a_?.a_;
+                
+                if (Array.isArray(attributes)) {
+                    attributes.forEach(attr => {
+                        // attr.l is label/key (e.g., "key2")
+                        // attr.d_ is data object
+                        // attr.d_.v is value
+                        // attr.d_.t is timestamp
+                        
+                        const label = attr.l;
+                        const dataObj = attr.d_;
+                        
+                        if (label && dataObj && dataObj.v !== undefined && dataObj.t) {
+                            // Check if value is numeric or can be plotted
+                            let value = dataObj.v;
+                            // If value is array or string that isn't numeric, we might skip or handle differently.
+                            // For line chart, we need numbers.
+                            if (typeof value === 'number') {
+                                if (!seriesDataMap.has(label)) {
+                                    seriesDataMap.set(label, []);
+                                }
+                                seriesDataMap.get(label).push([dataObj.t, value]);
+                            }
+                        }
+                    });
+                }
+            });
+
+            if (seriesDataMap.size === 0) {
+                 document.getElementById('errorMsg').textContent = '未找到有效的数值数据';
+                 document.getElementById('errorMsg').style.display = 'block';
+                 return;
+            }
+
+            // Prepare ECharts Series
+            const series = [];
+            const legendData = [];
+
+            seriesDataMap.forEach((dataPoints, label) => {
+                // Sort by time
+                dataPoints.sort((a, b) => a[0] - b[0]);
+                
+                legendData.push(label);
+                series.push({
+                    name: label,
+                    type: 'line',
+                    data: dataPoints,
+                    smooth: true,
+                    symbol: 'circle',
+                    symbolSize: 6
+                });
+            });
+
+            const option = {
+                tooltip: {
+                    trigger: 'axis',
+                    formatter: function (params) {
+                        let res = new Date(params[0].value[0]).toLocaleString() + '<br/>';
+                        params.forEach(param => {
+                            res += param.marker + param.seriesName + ': ' + param.value[1] + '<br/>';
+                        });
+                        return res;
+                    }
+                },
+                legend: {
+                    data: legendData,
+                    bottom: 0
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '10%',
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'time',
+                    boundaryGap: false,
+                    axisLabel: {
+                        formatter: function (value) {
+                            return new Date(value).toLocaleTimeString();
+                        }
+                    }
+                },
+                yAxis: {
+                    type: 'value'
+                },
+                series: series,
+                dataZoom: [
+                    {
+                        type: 'slider',
+                        show: true,
+                        xAxisIndex: [0],
+                        start: 0,
+                        end: 100
+                    },
+                    {
+                        type: 'inside',
+                        xAxisIndex: [0],
+                        start: 0,
+                        end: 100
+                    }
+                ]
+            };
+
+            myChart.setOption(option);
+
+        } catch (e) {
+            console.error(e);
+            document.getElementById('errorMsg').textContent = '数据解析错误: ' + e.message;
+            document.getElementById('errorMsg').style.display = 'block';
+        }
+    }
+</script>
+
+</body>
+</html>
